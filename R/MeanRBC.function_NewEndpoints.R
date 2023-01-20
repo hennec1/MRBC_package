@@ -27,7 +27,7 @@ meanRBC.function_NewEndpoints <- function(time, APE) {
   
   # To account for any non-monotonically decreasing points after 100% APE
   for(i in 1:nrow(sub1)){
-    if(is.na(sub1$APE[(i-i+1):(i-1)])){
+    if(any(is.na(sub1$APE[(i-i+1):(i-1)]))){
       sub1$start_time[i] <- sub1$start_time[i]
     } else if(any(sub1$APE[(i-i+1):(i-1)] == 100)) {
       sub1$start_time[i] <- 0
