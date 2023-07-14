@@ -9,6 +9,7 @@
 #' APE <- c(NA,2.3, 56.62, 87.15, 86.56, 90.60, 98.46, 89.64, 100, 81.19, 86.95,83.69, 83.88, 63.53, 64.30, 33.97, 22.84, 18.43);
 #' mrbc <- meanRBC.function_NewEndpoints(time, APE)
 #' @export
+
 meanRBC.function_NewEndpoints <- function(time, APE) {
   
   options(warn = -1)
@@ -103,7 +104,7 @@ meanRBC.function_NewEndpoints <- function(time, APE) {
   # if we don't meet this threshold (i.e. everything in "end_point" = 0), 
   # use this new approach to set final endpoint and calculate the ending APE
   
-  if(sum(sub1$end_point) == 0) {
+  if(sum(sub1$end_point, na.rm = T) == 0) {
     new_end_time <- (0 - sub1$reset_APE[nrow(sub1)-1]) / (sub1$reset_APE[nrow(sub1)] - sub1$reset_APE[nrow(sub1)-1]) * 
       (sub1$new_start_time[nrow(sub1)] - sub1$new_start_time[nrow(sub1)-1]) + sub1$new_start_time[nrow(sub1)-1]
     
@@ -141,10 +142,11 @@ meanRBC.function_NewEndpoints <- function(time, APE) {
   # Average ending APE from original data 
   avg_APE <- (22.43 + -23.12 + 17.79 + 17.06 + 15.31 + 24.26 + 18.92 + 24.35 + 22.92)/9
   
-  for(i in 1:nrow(sub1)){
-    sub1$curve_pt_unaj[i] <- ifelse(is.na(sub1$curve_pt_unaj[i]), avg_APE, sub1$curve_pt_unaj[i])
+  if(sum(sub1$end_point, na.rm = T) == 0) {
+    for(i in 1:nrow(sub1)){
+      sub1$curve_pt_unaj[i] <- ifelse(is.na(sub1$curve_pt_unaj[i]), avg_APE, sub1$curve_pt_unaj[i])
+    }
   }
-  
   
   # Step 7: Adjust the APE for ending percent
   # Correct the %APE using the last %APE to avoid overestimating the survival curve 
@@ -200,6 +202,3 @@ meanRBC.function_NewEndpoints <- function(time, APE) {
   unname(mean_rbc)
   
 }
-
-
-
